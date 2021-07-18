@@ -599,8 +599,9 @@ namespace alt::config
 
 			if (node.IsScalar())
 			{
-				if (useApostrophe)
-					os << '\'' << detail::Escape(node.ToString()) << "'\n";
+				auto str = node.ToString();
+				if (useApostrophe && str.find(' ', str.size()) > 0)
+					os << '\'' << detail::Escape(str) << "'\n";
 				else
 					os << detail::Escape(node.ToString()) << "\n";
 			}
