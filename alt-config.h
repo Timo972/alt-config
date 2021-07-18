@@ -593,7 +593,7 @@ namespace alt::config
 	class Emitter
 	{
 	public:
-		static void Emit(Node& node, std::ostream& os, int indent = 0, bool isLast = true)
+		static void Emit(Node& node, std::ostream& os, int indent = 0, bool isLast = true, bool useCommas = true)
 		{
 			std::string _indent(indent * 2, ' ');
 
@@ -612,7 +612,8 @@ namespace alt::config
 					Emit(*it, os, indent + 1, std::next(it) == list.end());
 				}
 
-				os << std::string((indent - 1) * 2, ' ') << (isLast ? "]\n" : "],\n");
+				os << std::string((indent - 1) * 2, ' ') << (isLast || !useCommas ? "]\n" : "],\n");
+				//os << std::string((indent - 1) * 2, ' ') << "]\n";
 			}
 			else if (node.IsDict())
 			{
@@ -630,7 +631,8 @@ namespace alt::config
 				}
 
 				if (indent > 0)
-					os << std::string((indent-1) * 2, ' ') << (isLast ? "}\n" : "},\n");
+					os << std::string((indent-1) * 2, ' ') << (isLast || !useCommas ? "}\n" : "},\n");
+					//os << std::string((indent-1) * 2, ' ') << "}\n";
 			}
 		}
 	};
