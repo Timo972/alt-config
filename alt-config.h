@@ -593,13 +593,16 @@ namespace alt::config
 	class Emitter
 	{
 	public:
-		static void Emit(Node& node, std::ostream& os, int indent = 0, bool isLast = true, bool useCommas = true)
+		static void Emit(Node& node, std::ostream& os, int indent = 0, bool isLast = true, bool useCommas = true, bool useApostrophe = true)
 		{
 			std::string _indent(indent * 2, ' ');
 
 			if (node.IsScalar())
 			{
-				os << '\'' << detail::Escape(node.ToString()) << "'\n";
+				if (useApostrophe)
+					os << '\'' << detail::Escape(node.ToString()) << "'\n";
+				else
+					os << detail::Escape(node.ToString()) << "\n";
 			}
 			else if (node.IsList())
 			{
@@ -609,7 +612,7 @@ namespace alt::config
 				for (auto it = list.begin(); it != list.end(); ++it)
 				{
 					os << _indent;
-					Emit(*it, os, indent + 1, std::next(it) == list.end());
+					Emit(*it, os, indent + 1, std::next(it) == list.end(), useCommas, useApostrophe);
 				}
 
 				os << std::string((indent - 1) * 2, ' ') << (isLast || !useCommas ? "]\n" : "],\n");
@@ -627,7 +630,7 @@ namespace alt::config
 						continue;
 
 					os << _indent << it->first << ": ";
-					Emit(it->second, os, indent + 1, std::next(it) == dict.end());
+					Emit(it->second, os, indent + 1, std::next(it) == dict.end(), useCommas, useApostrophe);
 				}
 
 				if (indent > 0)
