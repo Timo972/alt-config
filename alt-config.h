@@ -600,10 +600,11 @@ namespace alt::config
 			if (node.IsScalar())
 			{
 				auto str = node.ToString();
-				if (useApostrophe && str.find(' ', str.size()) > 0)
+				size_t specialChars = std::count(str.begin(), str.end(), ' ');
+				if (useApostrophe || specialChars > 0)
 					os << '\'' << detail::Escape(str) << "'\n";
 				else
-					os << detail::Escape(node.ToString()) << "\n";
+					os << detail::Escape(str) << "\n";
 			}
 			else if (node.IsList())
 			{
