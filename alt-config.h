@@ -284,7 +284,7 @@ namespace alt::config
 				{
 					return std::stod(val);
 				}
-				catch (const std::invalid_argument& e)
+				catch (const std::invalid_argument&)
 				{
 					throw Error{ "Not a number" };
 				}
@@ -378,6 +378,7 @@ namespace alt::config
 
 		Node Parse()
 		{
+			FixEncoding();
 			Tokenize();
 			auto begin = tokens.begin();
 			return Parse(begin);
@@ -580,7 +581,17 @@ namespace alt::config
 			}
 			}
 
-			throw Error("invalid token", tok->pos, tok->line, tok->col);
+			throw Error("Unexpected character", tok->pos, tok->line, tok->col);
+		}
+
+		void FixEncoding()
+		{
+			if(buffer.size() < 3) return;
+			// If file is encoded with BOM, remove the BOM header from the buffer
+			if(buffer[0] == (char)0xEF && buffer[1] == (char)0xBB && buffer[2] == (char)0xBF)
+			{
+				buffer.erase(buffer.begin(), buffer.begin() + 3);
+			}
 		}
 
 		std::vector<char> buffer;
